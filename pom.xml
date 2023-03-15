@@ -5,8 +5,12 @@
     <groupId>com.yhzdys</groupId>
     <artifactId>litchi</artifactId>
     <version>1.0.0</version>
+    <name>litchi</name>
     <description>A simple multi-datasource transaction manager component for the Spring and Mybatis.</description>
     <url>https://github.com/yhzdys/litchi</url>
+
+    <licenses>
+    </licenses>
 
     <developers>
         <developer>
