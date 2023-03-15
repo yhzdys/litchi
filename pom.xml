@@ -10,6 +10,11 @@
     <url>https://github.com/yhzdys/litchi</url>
 
     <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
 
     <developers>
