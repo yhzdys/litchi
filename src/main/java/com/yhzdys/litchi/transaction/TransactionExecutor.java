@@ -1,6 +1,7 @@
 package com.yhzdys.litchi.transaction;
 
 import com.yhzdys.litchi.exception.TransactionException;
+import com.yhzdys.litchi.transaction.connection.ConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.yhzdys.litchi.transaction;
+package com.yhzdys.litchi.transaction.connection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -12,6 +12,8 @@ public class DataSourceContext {
 
     /**
      * 当前所使用的数据源
+     *
+     * @return current datasource
      */
     public static String peek() {
         return HOLDER.get().peek();
@@ -19,6 +21,8 @@ public class DataSourceContext {
 
     /**
      * 设置当前线程数据源
+     *
+     * @param dataSource add datasource
      */
     public static void push(String dataSource) {
         HOLDER.get().push(dataSource);

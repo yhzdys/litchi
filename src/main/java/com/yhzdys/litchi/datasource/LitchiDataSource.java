@@ -1,9 +1,9 @@
 package com.yhzdys.litchi.datasource;
 
-import com.yhzdys.litchi.transaction.ConnectionContext;
-import com.yhzdys.litchi.transaction.ConnectionProxy;
 import com.yhzdys.litchi.transaction.TransactionContext;
 import com.yhzdys.litchi.transaction.TransactionId;
+import com.yhzdys.litchi.transaction.connection.ConnectionContext;
+import com.yhzdys.litchi.transaction.connection.ConnectionProxy;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
@@ -14,22 +14,27 @@ import java.util.Map;
 public class LitchiDataSource extends AbstractRoutingDataSource {
 
     @Override
-    public void setTargetDataSources(Map<Object, Object> dataSources) {
+    public final void setTargetDataSources(Map<Object, Object> dataSources) {
         super.setTargetDataSources(dataSources);
     }
 
     @Override
-    protected String determineCurrentLookupKey() {
+    public final DataSource determineTargetDataSource() {
+        return super.determineTargetDataSource();
+    }
+
+    @Override
+    public final String determineCurrentLookupKey() {
         return DataSourceContext.peek();
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
+    public final Connection getConnection() throws SQLException {
         DataSource dataSource = this.determineTargetDataSource();
         TransactionId tid = TransactionContext.get();
         // no transactional
         if (tid == null) {
-            return this.determineTargetDataSource().getConnection();
+            return dataSource.getConnection();
         }
         ConnectionProxy connection = ConnectionContext.getConnection(tid, dataSource);
         if (connection != null) {

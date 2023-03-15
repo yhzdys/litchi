@@ -1,5 +1,6 @@
-package com.yhzdys.litchi.transaction;
+package com.yhzdys.litchi.transaction.connection;
 
+import com.yhzdys.litchi.transaction.TransactionId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,9 @@ public class ConnectionContext {
 
     /**
      * notify transaction result
+     *
+     * @param tid      transaction id
+     * @param rollback if {@code true} rollback otherwise commit
      */
     public static void notify(TransactionId tid, boolean rollback) {
         Map<TransactionId, Map<DataSource, ConnectionProxy>> tmap = HOLDER.get();
