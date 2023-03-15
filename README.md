@@ -6,6 +6,16 @@
 
 ## 快速开始
 
+### 添加依赖
+
+~~~xml
+<dependency>
+    <groupId>com.yhzdys</groupId>
+    <artifactId>litchi</artifactId>
+    <version>1.0.0</version>
+</dependency>
+~~~
+
 ### 多数据源配置
 
 ~~~ java
