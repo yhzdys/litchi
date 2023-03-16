@@ -4,9 +4,8 @@ import com.yhzdys.litchi.annotation.LitchiTransactional;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.StaticMethodMatcher;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -29,14 +28,15 @@ public class TransactionPointcut implements Pointcut {
 
         @Override
         public boolean matches(Method method, Class<?> targetClass) {
-            if (AnnotatedElementUtils.hasAnnotation(method, LitchiTransactional.class)) {
-                return true;
+            LitchiTransactional annotation = method.getAnnotation(LitchiTransactional.class);
+            if (annotation == null) {
+                if (Proxy.isProxyClass(targetClass)) {
+                    return false;
+                } else {
+                    annotation = AnnotationUtils.findAnnotation(method, LitchiTransactional.class);
+                }
             }
-            if (Proxy.isProxyClass(targetClass)) {
-                return false;
-            }
-            Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
-            return method != specificMethod && AnnotatedElementUtils.hasAnnotation(specificMethod, LitchiTransactional.class);
+            return annotation != null;
         }
     }
 }
