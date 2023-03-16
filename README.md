@@ -1,5 +1,11 @@
 # 荔枝(Litchi)
 
+![OSCS](https://www.oscs1024.com/platform/badge/yhzdys/litchi.svg?size=small)
+![LICENSE](https://img.shields.io/github/license/yhzdys/litchi)
+![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Fyhzdys%2Flitchi%2Fmaven-metadata.xml)
+![Java](https://img.shields.io/badge/java-1.8%2B-green)
+![Code Size](https://img.shields.io/github/languages/code-size/yhzdys/litchi)
+
 ## 关于
 
 一款基于Spring+Mybatis开发的轻量化***本地多数据源事务控制***插件，荔枝很好吃😁
@@ -12,7 +18,7 @@
 <dependency>
     <groupId>com.yhzdys</groupId>
     <artifactId>litchi</artifactId>
-    <version>1.0.0</version>
+    <version>${litchi.version}</version>
 </dependency>
 ~~~
 
