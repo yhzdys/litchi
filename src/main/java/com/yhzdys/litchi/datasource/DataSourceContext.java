@@ -5,7 +5,7 @@ import java.util.Deque;
 
 public class DataSourceContext {
 
-    private static final ThreadLocal<Deque<String>> HOLDER = ThreadLocal.withInitial(ArrayDeque::new);
+    private static final ThreadLocal<Deque<String>> HOLDER = ThreadLocal.withInitial(() -> new ArrayDeque<>(8));
 
     private DataSourceContext() {
     }

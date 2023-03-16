@@ -57,7 +57,7 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
     private DataSource determineDataSource() {
         String dataSourceKey = DataSourceContext.peek();
         DataSource dataSource;
-        if (LitchiRouting.DEFAULT.equals(dataSourceKey)) {
+        if (LitchiRouting.DEFAULT.equals(dataSourceKey) || dataSourceKey == null) {
             dataSource = defaultDataSource;
         } else {
             dataSource = dataSources.get(dataSourceKey);
