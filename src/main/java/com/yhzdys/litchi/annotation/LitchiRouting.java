@@ -9,5 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LitchiRouting {
 
-    String value();
+    String DEFAULT = "_DEFAULT_";
+
+    String value() default DEFAULT;
 }

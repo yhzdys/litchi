@@ -13,10 +13,12 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * mybatis插件，支持在mapper上直接定义数据源路由
@@ -29,30 +31,30 @@ import java.util.Properties;
 })
 public class LitchiMybatisInterceptor implements Interceptor {
 
-    private static final String NULL = "@_NULL";
+    private static final Logger logger = LoggerFactory.getLogger(LitchiMybatisInterceptor.class);
 
     /**
      * [mapper, datasource]
      */
-    private final Map<String, String> CACHE = new HashMap<>(128);
+    private final Map<String, String> CACHE = new ConcurrentHashMap<>(128);
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        MappedStatement statement = (MappedStatement) invocation.getArgs()[0];
-        String statementId = statement.getId();
-        String datasource = CACHE.get(statementId);
-        if (datasource == null) {
-            synchronized (CACHE) {
-                datasource = CACHE.get(statementId);
-                if (datasource == null) {
-                    Class<?> mapper = Class.forName(statementId.substring(0, statementId.lastIndexOf(".")));
-                    LitchiRouting routing = mapper.getAnnotation(LitchiRouting.class);
-                    datasource = routing == null ? null : (routing.value() == null ? null : routing.value());
-                    CACHE.put(statementId, datasource == null ? NULL : datasource);
-                }
+        String statementId = ((MappedStatement) invocation.getArgs()[0]).getId();
+        String dataSource = CACHE.computeIfAbsent(statementId, k -> {
+            String result;
+            try {
+                Class<?> mapper = Class.forName(statementId.substring(0, statementId.lastIndexOf(".")));
+                LitchiRouting annotation = mapper.getAnnotation(LitchiRouting.class);
+                result = annotation == null ? LitchiRouting.DEFAULT : annotation.value();
+            } catch (Exception e) {
+                result = LitchiRouting.DEFAULT;
+                logger.error(e.getMessage(), e);
             }
-        }
-        DataSourceContext.push(NULL.equals(datasource) ? null : datasource);
+            return result;
+        });
+
+        DataSourceContext.push(dataSource);
         try {
             return invocation.proceed();
         } finally {

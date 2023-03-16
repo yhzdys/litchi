@@ -44,21 +44,21 @@ public DataSource slave2DataSource() {
 }
 
 /**
- * 荔枝多数据源汇总
+ * 多数据源
  */
 @Bean
 @Primary
 public DataSource litchiDataSource() {
-    Map<Object, Object> map = new HashMap<>(4);
+    Map<String, DataSource> map = new HashMap<>(4);
     map.put("master", this.masterDataSource());
     map.put("slave1", this.slave1DataSource());
     map.put("slave2", this.slave2DataSource());
 
     LitchiDataSource dataSource = new LitchiDataSource();
-    // 默认数据源
-    dataSource.setDefaultTargetDataSource(map.get("master"));
     // 多数据源
-    dataSource.setTargetDataSources(map);
+    dataSource.setDataSources(map);
+    // 默认数据源
+    dataSource.setDefaultDataSource("master");
     return dataSource;
 }
 
