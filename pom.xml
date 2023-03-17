@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yhzdys</groupId>
     <artifactId>litchi</artifactId>
-    <version>1.0.5</version>
+    <version>1.1.0</version>
     <name>litchi</name>
     <description>A simple multi-datasource transaction manager component for the Spring and Mybatis.</description>
     <url>https://github.com/yhzdys/litchi</url>
@@ -68,13 +68,13 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
+            <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
