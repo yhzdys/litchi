@@ -22,13 +22,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class ConnectionProxy implements Connection {
+public class TransactionConnection implements Connection {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConnectionProxy.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionConnection.class);
 
     private final Connection connection;
 
-    public ConnectionProxy(Connection connection) {
+    public TransactionConnection(Connection connection) {
         this.connection = connection;
     }
 

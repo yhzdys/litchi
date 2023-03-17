@@ -4,7 +4,7 @@ import com.yhzdys.litchi.annotation.LitchiRouting;
 import com.yhzdys.litchi.transaction.TransactionContext;
 import com.yhzdys.litchi.transaction.TransactionId;
 import com.yhzdys.litchi.transaction.connection.ConnectionContext;
-import com.yhzdys.litchi.transaction.connection.ConnectionProxy;
+import com.yhzdys.litchi.transaction.connection.TransactionConnection;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
@@ -74,12 +74,12 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
         if (tid == null) {
             return connection;
         }
-        ConnectionProxy connectionProxy = ConnectionContext.getConnection(tid, dataSource);
-        if (connectionProxy != null) {
-            return connectionProxy;
+        TransactionConnection transactionConnection = ConnectionContext.getConnection(tid, dataSource);
+        if (transactionConnection != null) {
+            return transactionConnection;
         }
-        connectionProxy = new ConnectionProxy(connection);
-        ConnectionContext.addConnection(tid, dataSource, connectionProxy);
-        return connectionProxy;
+        transactionConnection = new TransactionConnection(connection);
+        ConnectionContext.addConnection(tid, dataSource, transactionConnection);
+        return transactionConnection;
     }
 }
