@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yhzdys</groupId>
     <artifactId>litchi</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>litchi</name>
     <description>A simple multi-datasource transaction manager component for the Spring and Mybatis.</description>
     <url>https://github.com/yhzdys/litchi</url>
@@ -50,7 +50,7 @@
     </distributionManagement>
 
     <properties>
-        <slf4j.version>2.0.6</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <spring.version>5.3.25</spring.version>
         <mybatis.version>3.5.13</mybatis.version>
 

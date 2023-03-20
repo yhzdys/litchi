@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LitchiDataSource extends AbstractDataSource implements InitializingBean {
@@ -23,7 +24,9 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
     private DataSource defaultDataSource;
 
     public final void setDataSources(Map<String, DataSource> dataSources) {
-        this.dataSources = Collections.unmodifiableMap(dataSources);
+        Map<String, DataSource> map = new HashMap<>(dataSources.size());
+        map.putAll(dataSources);
+        this.dataSources = Collections.unmodifiableMap(map);
     }
 
     public void setDefaultDataSource(String dataSource) {
