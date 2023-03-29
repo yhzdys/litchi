@@ -43,9 +43,6 @@ public DataSource slave2DataSource() {
     return dataSource;
 }
 
-/**
- * 多数据源
- */
 @Bean
 @Primary
 public DataSource litchiDataSource() {
@@ -61,7 +58,11 @@ public DataSource litchiDataSource() {
     dataSource.setDefaultDataSource("master");
     return dataSource;
 }
+~~~
 
+### 多数据源事务控制
+
+~~~ java
 /**
  * 事务切面配置
  */
@@ -69,35 +70,42 @@ public DataSource litchiDataSource() {
 public PointcutAdvisor litchiTransactionAdvisor() {
     return new LitchiTransactionAdvisor();
 }
+~~~
 
-/**
- * mybatis插件
- */
+### 多数据源自动切换
+
+_以下两种方案任选其一即可！_
+_以下两种方案任选其一即可！_
+_以下两种方案任选其一即可！_
+
+#### 1. 使用Litchi动态代理（推荐）
+
+~~~ java
+// 使用LitchiMapperFactoryBean替换Mybatis原生的MapperFactoryBean
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@MapperScan(basePackages = "com.xxx.xxx.mapper", factoryBean = LitchiMapperFactoryBean.class)
+public class Application extends SpringBootServletInitializer {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+~~~
+
+#### 2. 使用Mybatis插件
+
+~~~ java
 @Bean
 public Interceptor litchiMybatisInterceptor() {
     return new LitchiMybatisInterceptor();
 }
 ~~~
 
-### Mybatis数据源切换
-
-~~~java
-@LitchiRouting("master")
-public interface MasterMapper {
-  // ...
-}
-~~~
+### Mapper接口定义切换的数据源
 
 ~~~java
 @LitchiRouting("slave1")
-public interface Salve1Mapper {
-  // ...
-}
-~~~
-
-~~~ java
-@LitchiRouting("slave2")
-public interface Salve2Mapper {
+public interface UserMapper {
   // ...
 }
 ~~~
