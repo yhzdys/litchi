@@ -25,7 +25,7 @@ public class LitchiMapperFactoryBean<T> extends MapperFactoryBean<T> {
         LitchiRouting annotation = mapper.getAnnotation(LitchiRouting.class);
         String dataSource = annotation == null ? LitchiRouting.DEFAULT : annotation.value();
 
-        LitchiMapperProxy proxy = new LitchiMapperProxy(object, dataSource);
+        MapperProxy proxy = new MapperProxy(object, dataSource);
         return (T) Proxy.newProxyInstance(mapper.getClassLoader(), new Class[]{mapper}, proxy);
     }
 }
