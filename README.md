@@ -82,14 +82,7 @@ _以下两种方案任选其一即可！_
 
 ~~~ java
 // 使用LitchiMapperFactoryBean替换Mybatis原生的MapperFactoryBean
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @MapperScan(basePackages = "com.xxx.xxx.mapper", factoryBean = LitchiMapperFactoryBean.class)
-public class Application extends SpringBootServletInitializer {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-}
 ~~~
 
 #### 2. 使用Mybatis插件
