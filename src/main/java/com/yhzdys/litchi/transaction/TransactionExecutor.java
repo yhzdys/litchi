@@ -1,7 +1,7 @@
 package com.yhzdys.litchi.transaction;
 
 import com.yhzdys.litchi.exception.TransactionException;
-import com.yhzdys.litchi.transaction.connection.ConnectionContext;
+import com.yhzdys.litchi.transaction.connection.TxConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public class TransactionExecutor {
             throw t;
         } finally {
             // 回滚or提交事务
-            ConnectionContext.notify(tid, rollback);
+            TxConnectionContext.notify(tid, rollback);
             TransactionContext.remove();
         }
         return result;

@@ -3,8 +3,8 @@ package com.yhzdys.litchi.datasource;
 import com.yhzdys.litchi.annotation.LitchiRouting;
 import com.yhzdys.litchi.transaction.TransactionContext;
 import com.yhzdys.litchi.transaction.TransactionId;
-import com.yhzdys.litchi.transaction.connection.ConnectionContext;
-import com.yhzdys.litchi.transaction.connection.TransactionConnection;
+import com.yhzdys.litchi.transaction.connection.TxConnection;
+import com.yhzdys.litchi.transaction.connection.TxConnectionContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
@@ -72,17 +72,17 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
         }
     }
 
-    private Connection determineConnection(DataSource dataSource, Connection connection) {
+    private Connection determineConnection(DataSource dataSource, Connection connection) throws SQLException {
         TransactionId tid = TransactionContext.get();
         if (tid == null) {
             return connection;
         }
-        TransactionConnection transactionConnection = ConnectionContext.getConnection(tid, dataSource);
-        if (transactionConnection != null) {
-            return transactionConnection;
+        TxConnection txConnection = TxConnectionContext.getConnection(tid, dataSource);
+        if (txConnection != null) {
+            return txConnection;
         }
-        transactionConnection = new TransactionConnection(connection);
-        ConnectionContext.addConnection(tid, dataSource, transactionConnection);
-        return transactionConnection;
+        txConnection = new TxConnection(connection);
+        TxConnectionContext.saveConnection(tid, dataSource, txConnection);
+        return txConnection;
     }
 }

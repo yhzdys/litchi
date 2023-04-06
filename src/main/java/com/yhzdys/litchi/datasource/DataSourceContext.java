@@ -35,7 +35,7 @@ public class DataSourceContext {
         Deque<String> deque = HOLDER.get();
         deque.pop();
         if (deque.isEmpty()) {
-            HOLDER.remove();
+            clear();
         }
     }
 

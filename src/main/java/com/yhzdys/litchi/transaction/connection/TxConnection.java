@@ -22,13 +22,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class TransactionConnection implements Connection {
+public class TxConnection implements Connection {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(TxConnection.class);
 
     private final Connection connection;
 
-    public TransactionConnection(Connection connection) {
+    public TxConnection(Connection connection) throws SQLException {
+        connection.setAutoCommit(false);
         this.connection = connection;
     }
 
