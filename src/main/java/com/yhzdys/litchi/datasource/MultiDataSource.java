@@ -1,7 +1,7 @@
 package com.yhzdys.litchi.datasource;
 
-import com.yhzdys.litchi.connection.Connection;
-import com.yhzdys.litchi.connection.TxConnection;
+import com.yhzdys.litchi.connection.ConnectionWrapper;
+import com.yhzdys.litchi.connection.TxConnectionWrapper;
 import com.yhzdys.litchi.context.DataSourceContext;
 import com.yhzdys.litchi.context.TransactionContext;
 import com.yhzdys.litchi.context.TxConnectionContext;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,17 +35,15 @@ public class MultiDataSource extends AbstractDataSource implements InitializingB
     }
 
     @Override
-    public final java.sql.Connection getConnection() throws SQLException {
+    public final Connection getConnection() throws SQLException {
         DataSource dataSource = this.determineDataSource();
-        java.sql.Connection connection = dataSource.getConnection();
-        return this.wrapConnection(dataSource, connection);
+        return this.wrapConnection(dataSource, dataSource.getConnection());
     }
 
     @Override
-    public final java.sql.Connection getConnection(String username, String password) throws SQLException {
+    public final Connection getConnection(String username, String password) throws SQLException {
         DataSource dataSource = this.determineDataSource();
-        java.sql.Connection connection = dataSource.getConnection(username, password);
-        return this.wrapConnection(dataSource, connection);
+        return this.wrapConnection(dataSource, dataSource.getConnection(username, password));
     }
 
     @Override
@@ -59,7 +58,7 @@ public class MultiDataSource extends AbstractDataSource implements InitializingB
     }
 
     private DataSource determineDataSource() {
-        String dataSourceKey = DataSourceContext.current();
+        String dataSourceKey = DataSourceContext.get();
         DataSource dataSource;
         if (dataSourceKey == null || dataSourceKey.length() < 1) {
             dataSource = defaultDataSource;
@@ -73,18 +72,18 @@ public class MultiDataSource extends AbstractDataSource implements InitializingB
         }
     }
 
-    private Connection wrapConnection(DataSource dataSource, java.sql.Connection connection) throws SQLException {
+    private ConnectionWrapper wrapConnection(DataSource dataSource, Connection connection) throws SQLException {
         TxId tid = TransactionContext.get();
         // no transaction existed
         if (tid == null) {
-            return new Connection(connection);
+            return new ConnectionWrapper(connection);
         }
-        TxConnection txConnection = TxConnectionContext.getConnection(tid, dataSource);
+        TxConnectionWrapper txConnection = TxConnectionContext.get(tid, dataSource);
         if (txConnection != null) {
             return txConnection;
         }
-        txConnection = new TxConnection(connection);
-        TxConnectionContext.saveConnection(tid, dataSource, txConnection);
+        txConnection = new TxConnectionWrapper(connection);
+        TxConnectionContext.set(tid, dataSource, txConnection);
         return txConnection;
     }
 }

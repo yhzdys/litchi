@@ -1,12 +1,13 @@
 package com.yhzdys.litchi.connection;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-public class TxConnection extends Connection {
+public class TxConnectionWrapper extends ConnectionWrapper {
 
     private final boolean autoCommit;
 
-    public TxConnection(java.sql.Connection connection) throws SQLException {
+    public TxConnectionWrapper(Connection connection) throws SQLException {
         super(connection);
         this.autoCommit = connection.getAutoCommit();
         if (autoCommit) {

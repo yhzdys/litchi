@@ -15,7 +15,7 @@ public class DataSourceContext {
      *
      * @return current datasource
      */
-    public static String current() {
+    public static String get() {
         return HOLDER.get().peek();
     }
 

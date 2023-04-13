@@ -4,6 +4,7 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -18,11 +19,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class Connection implements java.sql.Connection {
+public class ConnectionWrapper implements Connection {
 
-    protected final java.sql.Connection connection;
+    protected final Connection connection;
 
-    public Connection(java.sql.Connection connection) throws SQLException {
+    public ConnectionWrapper(Connection connection) {
         this.connection = connection;
     }
 
