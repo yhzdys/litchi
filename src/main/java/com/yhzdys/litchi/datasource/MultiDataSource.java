@@ -1,21 +1,21 @@
 package com.yhzdys.litchi.datasource;
 
-import com.yhzdys.litchi.annotation.LitchiRouting;
-import com.yhzdys.litchi.transaction.TransactionContext;
-import com.yhzdys.litchi.transaction.TransactionId;
-import com.yhzdys.litchi.transaction.connection.TxConnection;
-import com.yhzdys.litchi.transaction.connection.TxConnectionContext;
+import com.yhzdys.litchi.connection.Connection;
+import com.yhzdys.litchi.connection.TxConnection;
+import com.yhzdys.litchi.context.DataSourceContext;
+import com.yhzdys.litchi.context.TransactionContext;
+import com.yhzdys.litchi.context.TxConnectionContext;
+import com.yhzdys.litchi.transaction.TxId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LitchiDataSource extends AbstractDataSource implements InitializingBean {
+public class MultiDataSource extends AbstractDataSource implements InitializingBean {
 
     private Map<String, DataSource> dataSources;
 
@@ -29,22 +29,22 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
         this.dataSources = Collections.unmodifiableMap(map);
     }
 
-    public void setDefaultDataSource(String dataSource) {
+    public final void setDefaultDataSource(String dataSource) {
         this.defaultDataSourceKey = dataSource;
     }
 
     @Override
-    public final Connection getConnection() throws SQLException {
+    public final java.sql.Connection getConnection() throws SQLException {
         DataSource dataSource = this.determineDataSource();
-        Connection connection = dataSource.getConnection();
-        return this.determineConnection(dataSource, connection);
+        java.sql.Connection connection = dataSource.getConnection();
+        return this.wrapConnection(dataSource, connection);
     }
 
     @Override
-    public final Connection getConnection(String username, String password) throws SQLException {
+    public final java.sql.Connection getConnection(String username, String password) throws SQLException {
         DataSource dataSource = this.determineDataSource();
-        Connection connection = dataSource.getConnection(username, password);
-        return this.determineConnection(dataSource, connection);
+        java.sql.Connection connection = dataSource.getConnection(username, password);
+        return this.wrapConnection(dataSource, connection);
     }
 
     @Override
@@ -52,15 +52,16 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
         if (dataSources == null) {
             throw new IllegalArgumentException("DataSources is required");
         }
-        if (defaultDataSourceKey != null) {
-            defaultDataSource = dataSources.get(defaultDataSourceKey);
+        if (defaultDataSourceKey == null) {
+            throw new IllegalArgumentException("Default dataSource is required");
         }
+        defaultDataSource = dataSources.get(defaultDataSourceKey);
     }
 
     private DataSource determineDataSource() {
-        String dataSourceKey = DataSourceContext.peek();
+        String dataSourceKey = DataSourceContext.current();
         DataSource dataSource;
-        if (LitchiRouting.DEFAULT.equals(dataSourceKey) || dataSourceKey == null) {
+        if (dataSourceKey == null || dataSourceKey.length() < 1) {
             dataSource = defaultDataSource;
         } else {
             dataSource = dataSources.get(dataSourceKey);
@@ -72,10 +73,11 @@ public class LitchiDataSource extends AbstractDataSource implements Initializing
         }
     }
 
-    private Connection determineConnection(DataSource dataSource, Connection connection) throws SQLException {
-        TransactionId tid = TransactionContext.get();
+    private Connection wrapConnection(DataSource dataSource, java.sql.Connection connection) throws SQLException {
+        TxId tid = TransactionContext.get();
+        // no transaction existed
         if (tid == null) {
-            return connection;
+            return new Connection(connection);
         }
         TxConnection txConnection = TxConnectionContext.getConnection(tid, dataSource);
         if (txConnection != null) {

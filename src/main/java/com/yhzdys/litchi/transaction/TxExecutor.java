@@ -1,23 +1,21 @@
 package com.yhzdys.litchi.transaction;
 
+import com.yhzdys.litchi.context.TransactionContext;
+import com.yhzdys.litchi.context.TxConnectionContext;
 import com.yhzdys.litchi.exception.TransactionException;
-import com.yhzdys.litchi.transaction.connection.TxConnectionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class TransactionExecutor {
+public class TxExecutor {
 
-    public static final TransactionExecutor INSTANCE = new TransactionExecutor();
-    private static final Logger logger = LoggerFactory.getLogger(TransactionExecutor.class);
+    public static final TxExecutor INSTANCE = new TxExecutor();
 
-    private TransactionExecutor() {
+    private TxExecutor() {
     }
 
     public Object execute(Transaction transaction) throws Throwable {
         Propagation propagation = transaction.getPropagation();
-        SuspendedTransaction suspended = null;
+        SuspendedTx suspended = null;
         try {
             if (Propagation.REQUIRED == propagation) {
                 return this.doExecute(transaction);
@@ -61,13 +59,13 @@ public class TransactionExecutor {
         return TransactionContext.get() != null;
     }
 
-    private SuspendedTransaction suspend() {
-        TransactionId tid = TransactionContext.get();
+    private SuspendedTx suspend() {
+        TxId tid = TransactionContext.get();
         if (tid == null) {
             return null;
         }
         TransactionContext.remove();
-        return new SuspendedTransaction(tid);
+        return new SuspendedTx(tid);
     }
 
     private Object doExecute(Transaction transaction) throws Throwable {
@@ -75,7 +73,7 @@ public class TransactionExecutor {
             return transaction.proceed();
         }
         // 开启事务
-        TransactionId tid = TransactionContext.set(new TransactionId());
+        TxId tid = TransactionContext.set(new TxId());
         boolean rollback = false;
         Object result;
         try {
@@ -83,14 +81,13 @@ public class TransactionExecutor {
         } catch (Throwable t) {
             try {
                 rollback = this.shouldRollback(transaction, t);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+            } catch (Exception ignored) {
             }
             throw t;
         } finally {
+            TransactionContext.remove();
             // 回滚or提交事务
             TxConnectionContext.notify(tid, rollback);
-            TransactionContext.remove();
         }
         return result;
     }
@@ -133,10 +130,10 @@ public class TransactionExecutor {
         return this.getThrowableDeep(source, threw.getSuperclass());
     }
 
-    private void resume(SuspendedTransaction suspended) {
+    private void resume(SuspendedTx suspended) {
         if (suspended == null) {
             return;
         }
-        TransactionContext.set(suspended.getTid());
+        TransactionContext.set(suspended.getTxId());
     }
 }

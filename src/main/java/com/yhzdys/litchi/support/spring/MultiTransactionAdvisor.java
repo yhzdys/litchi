@@ -1,21 +1,22 @@
-package com.yhzdys.litchi.transaction.aspect;
+package com.yhzdys.litchi.support.spring;
 
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
+import org.springframework.core.Ordered;
 
 /**
  * spring aop切面定义
  */
-public class LitchiTransactionAdvisor extends AbstractPointcutAdvisor {
+public class MultiTransactionAdvisor extends AbstractPointcutAdvisor {
 
-    private final Advice advice = new TransactionalInterceptor();
+    private final Advice advice = new TxInterceptor();
 
-    private final Pointcut pointcut = new TransactionPointcut();
+    private final Pointcut pointcut = new TxPointcut();
 
     @Override
     public int getOrder() {
-        return Integer.MAX_VALUE;
+        return Ordered.HIGHEST_PRECEDENCE;
     }
 
     @Override

@@ -1,7 +1,7 @@
-package com.yhzdys.litchi.mybatis;
+package com.yhzdys.litchi.support.mybatis;
 
-import com.yhzdys.litchi.annotation.LitchiRouting;
-import com.yhzdys.litchi.datasource.DataSourceContext;
+import com.yhzdys.litchi.annotation.RoutingDataSource;
+import com.yhzdys.litchi.context.DataSourceContext;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -14,8 +14,6 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -34,9 +32,7 @@ import java.util.Properties;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
         @Signature(type = Executor.class, method = "queryCursor", args = {MappedStatement.class, Object.class, RowBounds.class}),
 })
-public class LitchiMybatisInterceptor implements Interceptor, ApplicationListener<ContextRefreshedEvent> {
-
-    private static final Logger logger = LoggerFactory.getLogger(LitchiMybatisInterceptor.class);
+public class DataSourceInterceptor implements Interceptor, ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * [mapper, datasource]
@@ -47,13 +43,13 @@ public class LitchiMybatisInterceptor implements Interceptor, ApplicationListene
     public Object intercept(Invocation invocation) throws Throwable {
         String dataSource = CACHE.get(((MappedStatement) invocation.getArgs()[0]).getId());
         if (dataSource == null) {
-            dataSource = LitchiRouting.DEFAULT;
+            dataSource = RoutingDataSource.DEFAULT;
         }
-        DataSourceContext.push(dataSource);
+        DataSourceContext.set(dataSource);
         try {
             return invocation.proceed();
         } finally {
-            DataSourceContext.pop();
+            DataSourceContext.remove();
         }
     }
 
@@ -75,14 +71,13 @@ public class LitchiMybatisInterceptor implements Interceptor, ApplicationListene
         for (SqlSessionFactory factory : factories.values()) {
             Collection<Class<?>> mappers = factory.getConfiguration().getMapperRegistry().getMappers();
             for (Class<?> mapper : mappers) {
-                LitchiRouting annotation = mapper.getAnnotation(LitchiRouting.class);
-                String dataSource = annotation == null ? LitchiRouting.DEFAULT : annotation.value();
+                RoutingDataSource annotation = mapper.getAnnotation(RoutingDataSource.class);
+                String dataSource = annotation == null ? RoutingDataSource.DEFAULT : annotation.value();
                 Method[] methods = mapper.getMethods();
                 for (Method method : methods) {
                     CACHE.put(mapper.getName() + "." + method.getName(), dataSource);
                 }
             }
         }
-        logger.info("LitchiRouting caches prepare completed, size={}", CACHE.size());
     }
 }

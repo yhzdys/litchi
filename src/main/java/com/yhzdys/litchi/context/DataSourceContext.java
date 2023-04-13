@@ -1,11 +1,11 @@
-package com.yhzdys.litchi.datasource;
+package com.yhzdys.litchi.context;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class DataSourceContext {
 
-    private static final ThreadLocal<Deque<String>> HOLDER = ThreadLocal.withInitial(() -> new ArrayDeque<>(8));
+    private static final ThreadLocal<Deque<String>> HOLDER = ThreadLocal.withInitial(() -> new ArrayDeque<>(4));
 
     private DataSourceContext() {
     }
@@ -15,23 +15,23 @@ public class DataSourceContext {
      *
      * @return current datasource
      */
-    public static String peek() {
+    public static String current() {
         return HOLDER.get().peek();
     }
 
     /**
      * 设置当前线程数据源
      *
-     * @param dataSource add datasource
+     * @param datasource add datasource
      */
-    public static void push(String dataSource) {
-        HOLDER.get().push(dataSource);
+    public static void set(String datasource) {
+        HOLDER.get().push(datasource);
     }
 
     /**
      * 移除当前数据源
      */
-    public static void pop() {
+    public static void remove() {
         Deque<String> deque = HOLDER.get();
         deque.pop();
         if (deque.isEmpty()) {

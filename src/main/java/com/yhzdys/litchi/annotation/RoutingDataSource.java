@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LitchiRouting {
+public @interface RoutingDataSource {
 
-    String DEFAULT = "_DEFAULT_";
+    String DEFAULT = "@DFT_DS";
 
     String value() default DEFAULT;
 }

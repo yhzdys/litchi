@@ -1,6 +1,6 @@
 package com.yhzdys.litchi.transaction;
 
-import com.yhzdys.litchi.annotation.LitchiTransactional;
+import com.yhzdys.litchi.annotation.MultiTransactional;
 import org.aopalliance.intercept.MethodInvocation;
 
 public class Transaction {
@@ -13,7 +13,7 @@ public class Transaction {
 
     private final Propagation propagation;
 
-    public Transaction(MethodInvocation invocation, LitchiTransactional annotation) {
+    public Transaction(MethodInvocation invocation, MultiTransactional annotation) {
         this.invocation = invocation;
         this.rollbackFor = annotation.rollbackFor();
         this.noRollbackFor = annotation.noRollbackFor();

@@ -45,13 +45,15 @@ public DataSource slave2DataSource() {
 
 @Bean
 @Primary
-public DataSource litchiDataSource() {
+public DataSource multiDataSource(@Qualifier("master") DataSource masterDataSource,
+                                    @Qualifier("slave1") DataSource slave1DataSource,
+                                    @Qualifier("slave1") DataSource slave2DataSource) {
     Map<String, DataSource> map = new HashMap<>(4);
-    map.put("master", this.masterDataSource());
-    map.put("slave1", this.slave1DataSource());
-    map.put("slave2", this.slave2DataSource());
+    map.put("master", masterDataSource);
+    map.put("slave1", slave1DataSource);
+    map.put("slave2", slave2DataSource);
 
-    LitchiDataSource dataSource = new LitchiDataSource();
+    MultiDataSource dataSource = new MultiDataSource();
     // 多数据源
     dataSource.setDataSources(map);
     // 默认数据源
@@ -64,11 +66,11 @@ public DataSource litchiDataSource() {
 
 ~~~ java
 /**
- * 事务切面配置
+ * 多数据源事务切面配置
  */
 @Bean
-public PointcutAdvisor litchiTransactionAdvisor() {
-    return new LitchiTransactionAdvisor();
+public PointcutAdvisor multiTransactionAdvisor() {
+    return new MultiTransactionAdvisor();
 }
 ~~~
 
@@ -81,23 +83,25 @@ _以下两种方案任选其一即可！_
 #### 1. 使用Litchi动态代理（推荐）
 
 ~~~ java
+import com.yhzdys.litchi.support.mybatis.MapperFactoryBean;
+
 // 使用LitchiMapperFactoryBean替换Mybatis原生的MapperFactoryBean
-@MapperScan(basePackages = "com.xxx.xxx.mapper", factoryBean = LitchiMapperFactoryBean.class)
+@MapperScan(basePackages = "com.xxx.xxx.mapper", factoryBean = MapperFactoryBean.class)
 ~~~
 
 #### 2. 使用Mybatis插件
 
 ~~~ java
 @Bean
-public Interceptor litchiMybatisInterceptor() {
-    return new LitchiMybatisInterceptor();
+public Interceptor dataSourceInterceptor() {
+    return new DataSourceInterceptor();
 }
 ~~~
 
 ### Mapper接口定义切换的数据源
 
 ~~~java
-@LitchiRouting("slave1")
+@RoutingDataSource("slave1")
 public interface UserMapper {
   // ...
 }
@@ -116,7 +120,7 @@ public class PaperMoonService {
     @Resource
     private Salve2Mapper salve2Mapper;
 
-    @LitchiTransactional(rollbackFor = {BizException.class, RpcException.class}, noRollbackFor = {IgnoreException.class}, propagation = Propagation.REQUIRED)
+    @MultiTransactional(rollbackFor = {BizException.class, RpcException.class}, noRollbackFor = {IgnoreException.class}, propagation = Propagation.REQUIRED)
     public void doService() {
         // ...
         masterMapper.insert();
@@ -164,6 +168,3 @@ public enum Propagation {
     NEVER,
 }
 ~~~
-
-
-

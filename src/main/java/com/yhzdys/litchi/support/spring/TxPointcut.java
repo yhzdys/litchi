@@ -1,6 +1,6 @@
-package com.yhzdys.litchi.transaction.aspect;
+package com.yhzdys.litchi.support.spring;
 
-import com.yhzdys.litchi.annotation.LitchiTransactional;
+import com.yhzdys.litchi.annotation.MultiTransactional;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
@@ -10,7 +10,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class TransactionPointcut implements Pointcut {
+class TxPointcut implements Pointcut {
 
     private final Matcher matcher = new Matcher();
 
@@ -28,12 +28,12 @@ public class TransactionPointcut implements Pointcut {
 
         @Override
         public boolean matches(Method method, Class<?> targetClass) {
-            LitchiTransactional annotation = method.getAnnotation(LitchiTransactional.class);
+            MultiTransactional annotation = method.getAnnotation(MultiTransactional.class);
             if (annotation == null) {
                 if (Proxy.isProxyClass(targetClass)) {
                     return false;
                 } else {
-                    annotation = AnnotationUtils.findAnnotation(method, LitchiTransactional.class);
+                    annotation = AnnotationUtils.findAnnotation(method, MultiTransactional.class);
                 }
             }
             return annotation != null;

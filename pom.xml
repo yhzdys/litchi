@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yhzdys</groupId>
     <artifactId>litchi</artifactId>
-    <version>1.2.2</version>
+    <version>2.0.0</version>
     <name>litchi</name>
     <description>A simple multi-datasource transaction manager component for the Spring and Mybatis.</description>
     <url>https://github.com/yhzdys/litchi</url>
@@ -50,8 +50,7 @@
     </distributionManagement>
 
     <properties>
-        <slf4j.version>1.7.36</slf4j.version>
-        <spring.version>5.3.25</spring.version>
+        <spring.version>5.3.26</spring.version>
         <mybatis.version>3.5.13</mybatis.version>
         <mybatis-srping.version>2.1.0</mybatis-srping.version>
 
@@ -61,12 +60,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>

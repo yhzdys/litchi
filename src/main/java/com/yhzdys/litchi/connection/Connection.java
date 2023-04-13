@@ -1,13 +1,9 @@
-package com.yhzdys.litchi.transaction.connection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.yhzdys.litchi.connection;
 
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -22,33 +18,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class TxConnection implements Connection {
+public class Connection implements java.sql.Connection {
 
-    private static final Logger logger = LoggerFactory.getLogger(TxConnection.class);
+    protected final java.sql.Connection connection;
 
-    private final Connection connection;
-
-    public TxConnection(Connection connection) throws SQLException {
-        connection.setAutoCommit(false);
+    public Connection(java.sql.Connection connection) throws SQLException {
         this.connection = connection;
-    }
-
-    public void notify(boolean rollback) {
-        try {
-            if (rollback) {
-                connection.rollback();
-            } else {
-                connection.commit();
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                connection.close();
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
     }
 
     @Override
@@ -83,17 +58,17 @@ public class TxConnection implements Connection {
 
     @Override
     public void commit() throws SQLException {
-//        connection.commit();
+        connection.commit();
     }
 
     @Override
     public void rollback() throws SQLException {
-//        connection.rollback();
+        connection.rollback();
     }
 
     @Override
     public void close() throws SQLException {
-//        connection.close();
+        connection.close();
     }
 
     @Override

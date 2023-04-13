@@ -2,7 +2,7 @@ package com.yhzdys.litchi.transaction;
 
 /**
  * Enumeration that represents transaction propagation behaviors
- * for use with the {@link com.yhzdys.litchi.annotation.LitchiTransactional} annotation
+ * for use with the {@link com.yhzdys.litchi.annotation.MultiTransactional} annotation
  */
 public enum Propagation {
 
