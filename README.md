@@ -46,8 +46,8 @@ public DataSource slave2DataSource() {
 @Bean
 @Primary
 public DataSource multiDataSource(@Qualifier("master") DataSource masterDataSource,
-                                    @Qualifier("slave1") DataSource slave1DataSource,
-                                    @Qualifier("slave1") DataSource slave2DataSource) {
+                                  @Qualifier("slave1") DataSource slave1DataSource,
+                                  @Qualifier("slave1") DataSource slave2DataSource) {
     Map<String, DataSource> map = new HashMap<>(4);
     map.put("master", masterDataSource);
     map.put("slave1", slave1DataSource);
@@ -93,8 +93,8 @@ import com.yhzdys.litchi.support.mybatis.MapperFactoryBean;
 
 ~~~ java
 @Bean
-public Interceptor dataSourceInterceptor() {
-    return new DataSourceInterceptor();
+public Interceptor multiDataSourceInterceptor() {
+    return new MultiDataSourceInterceptor();
 }
 ~~~
 

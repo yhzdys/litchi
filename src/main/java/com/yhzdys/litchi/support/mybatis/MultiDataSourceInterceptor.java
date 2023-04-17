@@ -32,7 +32,7 @@ import java.util.Properties;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
         @Signature(type = Executor.class, method = "queryCursor", args = {MappedStatement.class, Object.class, RowBounds.class}),
 })
-public class DataSourceInterceptor implements Interceptor, ApplicationListener<ContextRefreshedEvent> {
+public class MultiDataSourceInterceptor implements Interceptor, ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * [mapper, datasource]
